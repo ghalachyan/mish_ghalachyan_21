@@ -109,4 +109,37 @@ export default {
             });
         }
     },
+
+    async profile(req, res) {
+      try {
+          const {id} = req.user;
+
+          const user = await Users.findByPk(id, {
+              include: [
+                  {
+                      model: Media,
+                      as: 'avatar',
+                      attributes: ['images']
+                  },
+              ],
+          });
+
+          if (!user) {
+              res.status(404).json({
+                  message: 'User not found',
+                  user: []
+              });
+              return;
+          }
+
+          res.status(200).json({
+              user
+          })
+      }catch (e) {
+          res.status(500).json({
+              message: 'Internal server error',
+              error: e.message,
+          })
+      }
+    }
 }
