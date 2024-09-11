@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 
-export default  (schemas, target) => {
+export default (schemas, target) => {
     return (req, res, next) => {
         const {error} = schemas.validate(req[target], {
             abortEarly: false,
@@ -13,8 +13,10 @@ export default  (schemas, target) => {
                 fs.unlink(req.file.path).then(() => true).catch(() => false);
             }
 
-            if(req.file) {
-                req.files.forEach(file => {fs.unlink(file.path).then(() => true).catch(() => false)});
+            if (req.files) {
+                req.files.forEach(file => {
+                    fs.unlink(file.path).then(() => true).catch(() => false)
+                });
             }
 
             error.details.forEach(detail => {

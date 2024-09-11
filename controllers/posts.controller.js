@@ -1,6 +1,7 @@
 import Posts from "../models/Posts.js";
 import Media from "../models/Media.js";
 import Users from "../models/Users.js";
+import fs from "fs/promises";
 
 export default {
     async create(req, res) {
