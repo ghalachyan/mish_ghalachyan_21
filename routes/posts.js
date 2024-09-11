@@ -15,5 +15,12 @@ router.post(
     controller.create
 );
 
+router.get(
+    '/list',
+    checkToken,
+    validate(postsSchema.getPosts, 'query'),
+    controller.getPosts
+);
+
 
 export default router
