@@ -10,14 +10,14 @@ import nodemailer from 'nodemailer';
 //     }
 // });
 
-const transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
-    auth: {
-        user: 'maryjane.schimmel3@ethereal.email',
-        pass: 'SXpaj3wdp6nrXPtjwH'
-    }
-});
+// const transporter = nodemailer.createTransport({
+//     host: 'smtp.ethereal.email',
+//     port: 587,
+//     auth: {
+//         user: 'maryjane.schimmel3@ethereal.email',
+//         pass: 'SXpaj3wdp6nrXPtjwH'
+//     }
+// });
 
 export const sendMail = async ({to, subject, template, templateData}) => {
     try {

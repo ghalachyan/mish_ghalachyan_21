@@ -1,6 +1,7 @@
+import Media from "./Media.js";
+
 import {DataTypes, Model} from "sequelize";
 import sequelize from "../clients/sequelize.mysql.js";
-import Media from "./Media.js";
 
 class Posts extends Model {}
 

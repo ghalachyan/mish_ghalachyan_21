@@ -1,7 +1,6 @@
 import Posts from "../models/Posts.js";
 import Media from "../models/Media.js";
 import Users from "../models/Users.js";
-import fs from "fs/promises";
 
 export default {
     async create(req, res) {
@@ -10,6 +9,12 @@ export default {
             const {id} = req.user;
             const {files} = req;
 
+            if (!files) {
+                res.status(409).json({
+                    message: 'File or files not found!'
+                });
+                return;
+            }
             const post = await Posts.create({
                 description,
                 userId: id,
@@ -19,7 +24,7 @@ export default {
                 const filePath = file.path.replace('public/', '');
 
                 await Media.create({
-                    images: filePath,
+                    path: filePath,
                     postId: post.id,
                 })
             }
@@ -48,32 +53,22 @@ export default {
     async getPosts(req, res) {
         try {
             const {id: userId} = req.user;
-            const {
-                page,
-                limit
-            } = req.query;
+
+            const page = +req.query.page;
+            const limit = +req.query.limit;
 
             const total = Posts.count()
             const offset = (page - 1) * limit;
-            const maxPageCount = Math.ceil(total/limit);
-            const user = await Users.findByPk(userId);
+            const maxPageCount = Math.ceil(total / limit);
 
-            if (!user) {
-                 res.status(404).json({
-                    message: 'User not found',
-                    user: []
-                });
 
-                return;
-            }
-
-            if(page > maxPageCount) {
+            if (page > maxPageCount) {
                 res.status(404).json({
                     message: 'Posts does not found.',
                     posts: []
                 });
 
-                return ;
+                return;
             }
 
             const posts = await Posts.findAll({
@@ -91,11 +86,11 @@ export default {
                     },
                     {
                         model: Media,
-                        attributes: ['images', 'createdAt', 'postId'],
+                        attributes: ['path', 'createdAt', 'postId'],
                     },
                 ],
                 order: [['id', 'DESC']],
-                limit: parseInt(limit, 10),
+                limit,
                 offset
             });
 
@@ -103,6 +98,44 @@ export default {
                 message: 'Posts list',
                 posts
             })
+        } catch (e) {
+            res.status(500).json({
+                message: 'Internal server error',
+                error: e.message,
+            })
+        }
+    },
+
+    async delete(req, res) {
+        try {
+            const {id} = req.params;
+
+            if (!id) {
+                res.status(400).json({message: 'Id is required'});
+                return;
+            }
+
+            const post = await Posts.findByPk(id);
+
+            if (!post) {
+                res.status(404).json({
+                    message: 'Post Id not found.',
+                })
+                return;
+            }
+
+            const images = await Media.findAll(
+                {
+                    where: {postId: id}
+                });
+
+            await Media.deleteFiles(images);
+            await Media.destroy({where: {postId: id}});
+            await post.destroy();
+
+            res.status(200).json({
+                message: 'Post and associated media deleted successfully.'
+            });
         } catch (e) {
             res.status(500).json({
                 message: 'Internal server error',

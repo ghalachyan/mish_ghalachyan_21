@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import Users from "../models/Users.js";
 
 const { JWT_SECRET } = process.env; 
 
@@ -13,6 +14,14 @@ export default async (req, res, next) => {
     try{
         const decryptedData = jwt.verify(token, JWT_SECRET);
 
+        const user = await Users.findByPk(decryptedData.id, {raw: true});
+
+        if (!user) {
+            res.status(401).json({
+                message: 'User not found',
+            });
+            return;
+        }
         if (!decryptedData) {
             res.status(401).json({
                 message: 'Invalid or expired token',
@@ -20,7 +29,7 @@ export default async (req, res, next) => {
             return;
         }
 
-        req.user = decryptedData;
+        req.user = user;
 
         next();
     }catch(e) {

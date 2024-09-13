@@ -22,5 +22,11 @@ router.get(
     controller.getPosts
 );
 
+router.delete(
+    '/delete/:id',
+    checkToken,
+    validate(postsSchema.delete, 'params'),
+    controller.delete
+)
 
 export default router

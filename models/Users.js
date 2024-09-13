@@ -1,8 +1,10 @@
 import md5 from "md5";
+
 import Posts from "./Posts.js";
+import Media from "./Media.js";
+
 import {DataTypes, Model} from 'sequelize';
 import sequelize from '../clients/sequelize.mysql.js';
-import Media from "./Media.js";
 
 const { USER_PASSWORD_SECRET } = process.env;
 
