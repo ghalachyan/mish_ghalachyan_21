@@ -11,4 +11,8 @@ export default {
         email: Joi.string().trim().email().required(),
         password: Joi.string().trim().min(8).max(16).required()
     }),
+
+    activate: Joi.object({
+        key: Joi.string().min(3).max(200).required(),
+    }),
 }

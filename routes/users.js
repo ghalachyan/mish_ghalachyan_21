@@ -26,4 +26,10 @@ router.get(
     controller.profile
 );
 
+router.get(
+    '/activate',
+    validate(usersSchema.activate, 'query'),
+    controller.activate
+)
+
 export default router;

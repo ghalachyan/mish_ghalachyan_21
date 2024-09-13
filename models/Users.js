@@ -48,6 +48,15 @@ Users.init(
             allowNull: false,
         },
 
+        status: {
+            type: DataTypes.STRING,
+            defaultValue: 'pending',
+        },
+
+        activationKey: {
+            type: DataTypes.STRING,
+        }
+
     },
     {
         sequelize,
