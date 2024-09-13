@@ -1,11 +1,13 @@
 import {v4 as uuid} from 'uuid';
+import jwt from 'jsonwebtoken';
 import fs from 'fs/promises';
 
 import utils from "../utils/utils.js";
 import Users from "../models/Users.js";
 import Media from "../models/Media.js";
-
 import {sendMail} from "../services/Mail.js";
+
+const {USER_PASSWORD_KEY} = process.env;
 
 export default {
     async registration(req, res) {
@@ -216,6 +218,96 @@ export default {
             res.status(200).json({
                 user
             })
+        } catch (e) {
+            res.status(500).json({
+                message: 'Internal server error',
+                error: e.message,
+            })
+        }
+    },
+
+    async passwordRecovery(req, res) {
+        try {
+            const {email} = req.body;
+            const user = await Users.findOne({
+                where: {email}
+            });
+            if (!user) {
+                res.status(404).json({message: 'User not found'});
+                return;
+            }
+
+            const payload = jwt.sign(
+                {id: user.id, email: user.email},
+                USER_PASSWORD_KEY,
+                {
+                    expiresIn: '12h',
+                }
+            );
+
+            await sendMail({
+                to: user.email,
+                subject: 'Update user password',
+                template: 'userPassword',
+                templateData: {
+                    link: `http://localhost:3000/users/update/password?key=${payload}`
+                }
+            });
+
+            res.status(200).json({
+                message: 'Email sent successfully',
+            })
+        } catch (e) {
+            res.status(500).json({
+                message: 'Internal server error',
+                error: e.message,
+            });
+        }
+    },
+
+    async passwordUpdate(req, res) {
+        try {
+            const {password, duplicatePassword} = req.body;
+
+            const {key} = req.query;
+
+            if (!key) {
+                res.status(400).json({
+                    message: 'Token is required'
+                });
+                return;
+            }
+
+            const confirmedPassword = jwt.verify(key, USER_PASSWORD_KEY);
+
+            if (!confirmedPassword) {
+                res.status(401).json({
+                    message: 'Invalid password key'
+                });
+                return;
+            }
+
+            if (password !== duplicatePassword) {
+                res.status(400).json({
+                    message: 'Password not found'
+                })
+            }
+
+            await Users.update(
+                {
+                    password: duplicatePassword,
+                },
+                {
+                    where: {
+                        id: confirmedPassword.id
+                    }
+                }
+            );
+
+            res.status(200).json({
+                message: 'Password updated successfully'
+            })
+
         } catch (e) {
             res.status(500).json({
                 message: 'Internal server error',

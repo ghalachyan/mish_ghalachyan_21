@@ -20,6 +20,17 @@ router.post(
     controller.login
 );
 
+router.post(
+    '/recovery/password',
+    controller.passwordRecovery
+)
+
+router.put(
+    '/update/password',
+    validate(usersSchema.updatePassword, 'body'),
+    controller.passwordUpdate
+)
+
 router.get(
     '/profile',
     checkToken,

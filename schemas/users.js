@@ -15,4 +15,9 @@ export default {
     activate: Joi.object({
         key: Joi.string().min(3).max(200).required(),
     }),
+
+    updatePassword: Joi.object({
+        password: Joi.string().min(3).max(50).required(),
+        duplicatePassword: Joi.string().min(3).max(50).required(),
+    }),
 }
