@@ -30,6 +30,16 @@ Media.init(
         path: {
             type: DataTypes.STRING,
         },
+
+        postId: {
+            type: DataTypes.BIGINT.UNSIGNED,
+            allowNull: true,
+        },
+
+        userId: {
+            type: DataTypes.BIGINT.UNSIGNED,
+            allowNull: true,
+        },
     },
     {
         sequelize,

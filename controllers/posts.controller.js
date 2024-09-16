@@ -33,6 +33,7 @@ export default {
                 include: [
                     {
                         model: Media,
+                        as: 'images',
                     }
                 ]
             });

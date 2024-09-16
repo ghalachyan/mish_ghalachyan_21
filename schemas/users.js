@@ -20,4 +20,23 @@ export default {
         password: Joi.string().min(3).max(50).required(),
         duplicatePassword: Joi.string().min(3).max(50).required(),
     }),
+
+    userPosts: Joi.object({
+        order: Joi.string().valid('asc', 'desc').required(),
+    }),
+
+    follow: Joi.object({
+        followId: Joi.number().integer().positive().required(),
+    }),
+
+    getFollowers: Joi.object({
+        page: Joi.number().integer().min(1).max(10000000).default(1).required(),
+        limit: Joi.number().integer().min(5).max(20).default(5).required(),
+        order: Joi.string().valid('asc', 'desc').default('desc').required(),
+        orderBy: Joi.string().valid('createdAt', 'updatedAt').default('createdAt').required(),
+    }),
+
+    unfollow: Joi.object({
+        followId: Joi.number().integer().positive().required(),
+    }),
 }

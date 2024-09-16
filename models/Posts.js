@@ -35,7 +35,8 @@ Posts.init(
 Posts.hasMany(Media, {
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
-    foreignKey: 'postId'
+    foreignKey: 'postId',
+    as: 'images',
 });
 
 Media.belongsTo(Posts);

@@ -1,4 +1,4 @@
-import {Router} from 'express';
+import {query, Router} from 'express';
 import usersSchema from '../schemas/users.js';
 import validate from '../middleware/validate.js';
 import uploadFile from "../middleware/uploadFile.js";
@@ -22,11 +22,20 @@ router.post(
 
 router.post(
     '/recovery/password',
+    checkToken,
     controller.passwordRecovery
+)
+
+router.post(
+    '/follow/:followId',
+    checkToken,
+    validate(usersSchema.follow, 'params'),
+    controller.followUser
 )
 
 router.put(
     '/update/password',
+    checkToken,
     validate(usersSchema.updatePassword, 'body'),
     controller.passwordUpdate
 )
@@ -41,6 +50,26 @@ router.get(
     '/activate',
     validate(usersSchema.activate, 'query'),
     controller.activate
+)
+
+router.get(
+    '/posts',
+    checkToken,
+    controller.userPosts
+)
+
+router.get(
+    '/followers',
+    checkToken,
+    validate(usersSchema.getFollowers, 'query'),
+    controller.getFollowingUsers
+)
+
+router.delete(
+    '/unfollow/:followId',
+    checkToken,
+    validate(usersSchema.unfollow, 'params'),
+    controller.unfollowUser
 )
 
 export default router;
